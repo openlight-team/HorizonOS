@@ -196,27 +196,35 @@ namespace entendreOS
 
                 Console.WriteLine("  ");
 
-                Console.WriteLine("Appending to" + filename2);
+                Console.WriteLine("Appending to " + filename2);
                 Console.WriteLine("Write [#save] to save the document");
                 Separator();
 
                 string lastline;
                 bool save = false;
 
-                while(save == false)
+                try
                 {
-                    lastline = Console.ReadLine();
-                    if(lastline == "#save")
+                    while (save == false)
                     {
-                        save = true;
-                        Console.WriteLine("  ");
-                        Horizon_Cmd();
+                        lastline = Console.ReadLine();
+                        if (lastline == "#save")
+                        {
+                            save = true;
+                            Console.WriteLine("  ");
+                            Horizon_Cmd();
+                        }
+                        else
+                        {
+                            File.AppendAllText(@filename2, lastline + Environment.NewLine);
+                        }
                     }
-                    else
-                    {
-                        Directory.CreateDirectory(Path.GetDirectoryName(filename2));
-                        File.AppendAllText(@filename2, lastline + Environment.NewLine);
-                    }
+                }
+                catch
+                {
+                    Console.WriteLine(" ");
+                    Console.WriteLine("Cannot save, this folder doesn't exist");
+                    Separator();
                 }
             }
 
