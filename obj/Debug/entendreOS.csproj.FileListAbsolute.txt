@@ -1,0 +1,7 @@
+C:\Users\vince\source\repos\entendreOS\entendreOS\obj\Debug\entendreOS.csproj.AssemblyReference.cache
+C:\Users\vince\source\repos\entendreOS\entendreOS\obj\Debug\entendreOS.csproj.CoreCompileInputs.cache
+C:\Users\vince\source\repos\entendreOS\entendreOS\bin\Debug\HorizonOS.exe.config
+C:\Users\vince\source\repos\entendreOS\entendreOS\bin\Debug\HorizonOS.exe
+C:\Users\vince\source\repos\entendreOS\entendreOS\bin\Debug\HorizonOS.pdb
+C:\Users\vince\source\repos\entendreOS\entendreOS\obj\Debug\HorizonOS.exe
+C:\Users\vince\source\repos\entendreOS\entendreOS\obj\Debug\HorizonOS.pdb

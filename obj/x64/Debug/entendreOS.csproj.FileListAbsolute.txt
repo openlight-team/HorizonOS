@@ -1,0 +1,7 @@
+C:\Users\vince\source\repos\entendreOS\entendreOS\bin\x64\Debug\entendreOS.exe.config
+C:\Users\vince\source\repos\entendreOS\entendreOS\bin\x64\Debug\entendreOS.exe
+C:\Users\vince\source\repos\entendreOS\entendreOS\bin\x64\Debug\entendreOS.pdb
+C:\Users\vince\source\repos\entendreOS\entendreOS\obj\x64\Debug\entendreOS.csproj.AssemblyReference.cache
+C:\Users\vince\source\repos\entendreOS\entendreOS\obj\x64\Debug\entendreOS.csproj.CoreCompileInputs.cache
+C:\Users\vince\source\repos\entendreOS\entendreOS\obj\x64\Debug\entendreOS.exe
+C:\Users\vince\source\repos\entendreOS\entendreOS\obj\x64\Debug\entendreOS.pdb
