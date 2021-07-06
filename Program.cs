@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using System.Threading;
 using System.Diagnostics;
 using System.Runtime.InteropServices;
+using System.Text.RegularExpressions;
 
 namespace entendreOS
 {
@@ -344,23 +345,53 @@ namespace entendreOS
 
             else
             {
-                if (File.Exists(cmd))
+                string args = "";
+                string exec = "";
+
+                string[] textSplit = cmd.Split(':');
+                exec = textSplit[0];
+
+                if(cmd.Contains(':'))
                 {
-                    bool isExe = CheckIfFileIsExecutable(cmd);
-                    if (isExe == true) {
-                        System.Diagnostics.Process p = new System.Diagnostics.Process();
-                        p.StartInfo.FileName = cmd;
-                        p.StartInfo.UseShellExecute = false;
+                    args = textSplit[1];
+                }
+
+                System.Diagnostics.Process p = new System.Diagnostics.Process();
+                p.StartInfo.FileName = exec;
+                p.StartInfo.Arguments = args;
+                p.StartInfo.UseShellExecute = false;
+
+
+                if (File.Exists(exec))
+                {
+                    bool isExe = CheckIfFileIsExecutable(exec);
+                    if (isExe == true)
+                    {
                         p.Start();
                         Horizon_Cmd();
                     }
                     else
                     {
-                        Console.WriteLine("  ");
-                        string data = File.ReadAllText(cmd);
-                        Console.WriteLine(data);
-                        Console.WriteLine("  ");
-                        Horizon_Cmd();
+                        if (File.Exists(cmd))
+                        {
+                            Console.WriteLine("  ");
+                            string data = File.ReadAllText(cmd);
+                            Console.WriteLine(data);
+                            Console.WriteLine("  ");
+                            Horizon_Cmd();
+                        }
+                        else if (File.Exists(exec))
+                        {
+                            Console.WriteLine("  ");
+                            string data = File.ReadAllText(exec);
+                            Console.WriteLine(data);
+                            Console.WriteLine("  ");
+                            Horizon_Cmd();
+                        }
+                        else
+                        {
+                            Horizon_Cmd();
+                        }
                     }
                 }
                 else
