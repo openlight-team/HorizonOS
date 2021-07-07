@@ -13,6 +13,9 @@
     <Authors>ecnivtwelve &amp; Mizu</Authors>
     <Company>Openlight</Company>
     <Version>1.2.0.4</Version>
+    <ApplicationIcon />
+    <StartupObject />
+    <Platforms>AnyCPU;x64;x86;ARM64</Platforms>
   </PropertyGroup>
 
   <ItemGroup>
