@@ -258,6 +258,7 @@ namespace entendreOS
             Console.WriteLine("     * Help and support  : @Vincent.#0705 on Discord");
             Console.WriteLine("                         : @ecnivtwelve on Github");
             Console.WriteLine("                         : @Rexxt on Github");
+            Console.WriteLine("                         : @andrewdevlab on Github");
             Console.WriteLine("     * My website        : https://www.ectw.fr/");
             Console.WriteLine("     * Openlight website : https://openlight.me/");
             Console.WriteLine("  ");
