@@ -248,6 +248,8 @@ namespace entendreOS
             }
         }
 
+        static string currentUsername;
+
         static void Horizon()
         {
             Console.BackgroundColor = ConsoleColor.Black;
@@ -266,378 +268,409 @@ namespace entendreOS
             Separator();
             Console.WriteLine("  ");
 
+            currentUsername = File.ReadAllText(@"globalreg/username.horizonconf");
             Horizon_Cmd();
         }
 
         static void Horizon_Cmd()
         {
-            string path = Directory.GetCurrentDirectory();
-            string fullPath = Path.GetFullPath(path).TrimEnd(Path.DirectorySeparatorChar);
-            string projectName = Path.GetFileName(fullPath);
+            try {
+                string path = Directory.GetCurrentDirectory();
+                string fullPath = Path.GetFullPath(path).TrimEnd(Path.DirectorySeparatorChar);
+                string projectName = Path.GetFileName(fullPath);
 
-            Console.Write("  (horizon)" + File.ReadAllText(@"globalreg/username.horizonconf") + "/" + projectName + " > ");
-            string cmd = Console.ReadLine();
+                Console.Write("  (horizon)" + currentUsername + "/" + projectName + " > ");
+                string cmd = Console.ReadLine();
 
-            // HzCmd builtins
+                // HzCmd builtins
 
-            if (cmd == "horizon flush")
-            {
-                // Resets OS
-
-                Console.Write("  Are you sure you want to reset the registry (yes/no) ? ");
-                string answer = Console.ReadLine();
-
-                if (answer == "yes")
+                if (cmd == "horizon flush")
                 {
-                    File.Delete(@"globalreg/oobe.horizonconf");
-                    Console.Clear();
-                    Console.WriteLine("  ");
-                    Console.WriteLine("  Registry has been reset to its default values.");
-                    Horizon_Logon();
-                }
-                else
-                {
-                    Horizon_Cmd();
-                }
-            }
+                    // Resets OS
 
-            if (cmd.StartsWith("edit"))
-            {
-                // Builtin text file editor
-                // vim for HorizonOS when
+                    Console.Write("  Are you sure you want to reset the registry (yes/no) ? ");
+                    string answer = Console.ReadLine();
 
-                string filename2 = cmd.Replace("edit ", ""); ;
-
-                Console.WriteLine("  ");
-
-                Console.WriteLine("  Appending to " + filename2);
-                Console.WriteLine("  Write [#save] to save the document");
-                Separator();
-
-                string lastline;
-                bool save = false;
-
-                try
-                {
-                    while (save == false)
+                    if (answer == "yes")
                     {
-                        Console.Write("  ");
-                        lastline = Console.ReadLine();
-                        if (lastline == "#save")
-                        {
-                            save = true;
-                            Console.WriteLine("  ");
-                            Horizon_Cmd();
-                        }
-                        else
-                        {
-                            File.AppendAllText(@filename2, lastline + Environment.NewLine);
-                        }
+                        File.Delete(@"globalreg/oobe.horizonconf");
+                        Console.Clear();
+                        Console.WriteLine("  ");
+                        Console.WriteLine("  Registry has been reset to its default values.");
+                        Horizon_Logon();
+                    }
+                    else
+                    {
+                        Horizon_Cmd();
                     }
                 }
-                catch
+
+                if (cmd.StartsWith("edit"))
                 {
-                    Console.WriteLine(" ");
-                    Console.WriteLine("  Cannot save, this folder doesn't exist");
+                    // Builtin text file editor
+                    // vim for HorizonOS when
+
+                    string filename2 = cmd.Replace("edit ", ""); ;
+
+                    Console.WriteLine("  ");
+
+                    Console.WriteLine("  Appending to " + filename2);
+                    Console.WriteLine("  Write [#save] to save the document");
                     Separator();
-                }
-            }
 
-            if (cmd.StartsWith("delete"))
-            {
-                // Deletes file
-                string filename2 = cmd.Replace("delete ", ""); ;
-                if (File.Exists(filename2))
-                {
-                    File.Delete(filename2);
-                    Console.WriteLine("  ");
-                    Horizon_Cmd();
-                }
-                else
-                {
-                    Console.WriteLine("  The file doesn't exist.");
-                    Console.WriteLine("  ");
-                    Horizon_Cmd();
-                }
-            }
+                    string lastline;
+                    bool save = false;
 
-            if (cmd.StartsWith("print"))
-            {
-                // Prints text to console
-                Console.Write("  ");
-                Console.WriteLine(cmd.Replace("print ", ""));
-                Console.WriteLine("  ");
-            }
-
-            // list/ls/dir are aliased functions
-            // Cist every file/folder in parent folder or specified folder
-            if (cmd.StartsWith("list"))
-            {
-                list(cmd.Replace("list ", ""));
-            }
-
-            if (cmd.StartsWith("ls"))
-            {
-                list(cmd.Replace("ls ", ""));
-            }
-
-            if (cmd.StartsWith("dir"))
-            {
-                list(cmd.Replace("dir ", ""));
-            }
-
-            if (cmd.StartsWith("mkdir"))
-            {
-                // Creates directory
-                Directory.CreateDirectory(cmd.Replace("mkdir ", ""));
-            }
-
-            // copy/cp are aliased functions
-            // Copy file to other location
-            if (cmd.StartsWith("copy"))
-            {
-                Console.Write("  What's your destination? ");
-                string dest = Console.ReadLine();
-                try
-                {
-                    File.Copy(cmd.Replace("copy ", ""), dest);
-                }
-                catch
-                {
-                    Console.WriteLine("  This file doesn't exist.");
-                }
-            }
-
-            if (cmd.StartsWith("cp"))
-            {
-                Console.Write("  What's your destination? ");
-                string dest = Console.ReadLine();
-                try
-                {
-                    File.Copy(cmd.Replace("cp ", ""), dest);
-                }
-                catch
-                {
-                    Console.WriteLine("  This file doesn't exist.");
-                }
-            }
-
-            if (cmd.StartsWith("del"))
-            {
-                // Delete directory
-                try
-                {
-                    Directory.Delete(cmd.Replace("del ", ""));
-                }
-                catch
-                {
-                    Console.WriteLine("  This directory doesn't exist.");
-                }
-            }
-
-            if (cmd.StartsWith("get"))
-            {
-                // Package downloader
-                Console.Write("  What is your destination file? ");
-                string file3 = Console.ReadLine();
-                ServicePointManager.Expect100Continue = true;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
-                using (var client = new WebClient())
-                {
-                    client.DownloadFile(cmd.Replace("get ", ""), file3);
-                }
-            }
-
-            // Sets parent working directory
-            if (cmd.StartsWith("cd"))
-            {
-                try
-                {
-                    Directory.SetCurrentDirectory(cmd.Replace("cd ", ""));
-                }
-                catch
-                {
-                    Console.WriteLine("  This directory doesn't exist.");
-                }
-            }
-
-            if (cmd == "help")
-            {
-                // Help command
-                help();
-            }
-
-            if (cmd == "exit")
-            {
-                System.Environment.Exit(1);
-            }
-
-            if (cmd == "?")
-            {
-                // Help command
-                help();
-            }
-
-            else
-            {
-                // executes or prints content of given file
-                string args = "";
-                string exec = "";
-
-                string[] textSplit = cmd.Split(':');
-                exec = textSplit[0];
-
-                if (cmd.Contains(':'))
-                {
-                    args = textSplit[1];
-                }
-
-                System.Diagnostics.Process p = new System.Diagnostics.Process();
-                p.StartInfo.FileName = exec;
-                p.StartInfo.Arguments = args;
-                p.StartInfo.UseShellExecute = false;
-
-
-                if (File.Exists(exec))
-                {
-                    bool isExe = CheckIfFileIsExecutable(exec);
-                    if (isExe)
+                    try
                     {
-                        // Start executable
-                        Console.WriteLine();
-                        p.Start();
+                        while (save == false)
+                        {
+                            Console.Write("  ");
+                            lastline = Console.ReadLine();
+                            if (lastline == "#save")
+                            {
+                                save = true;
+                                Console.WriteLine("  ");
+                                Horizon_Cmd();
+                            }
+                            else
+                            {
+                                File.AppendAllText(@filename2, lastline + Environment.NewLine);
+                            }
+                        }
+                    }
+                    catch
+                    {
+                        Console.WriteLine(" ");
+                        Console.WriteLine("  Cannot save, this folder doesn't exist");
+                        Separator();
+                    }
+                }
+
+                if (cmd.StartsWith("delete"))
+                {
+                    // Deletes file
+                    string filename2 = cmd.Replace("delete ", ""); ;
+                    if (File.Exists(filename2))
+                    {
+                        File.Delete(filename2);
+                        Console.WriteLine("  ");
                         Horizon_Cmd();
                     }
                     else
                     {
-                        // Print contents
-                        if (File.Exists(cmd))
+                        Console.WriteLine("  The file doesn't exist.");
+                        Console.WriteLine("  ");
+                        Horizon_Cmd();
+                    }
+                }
+
+                if (cmd.StartsWith("print"))
+                {
+                    // Prints text to console
+                    Console.Write("  ");
+                    Console.WriteLine(cmd.Replace("print ", ""));
+                    Console.WriteLine("  ");
+                }
+
+                // list/ls/dir are aliased functions
+                // Cist every file/folder in parent folder or specified folder
+                if (cmd.StartsWith("list"))
+                {
+                    list(cmd.Replace("list ", ""));
+                }
+
+                if (cmd.StartsWith("ls"))
+                {
+                    list(cmd.Replace("ls ", ""));
+                }
+
+                if (cmd.StartsWith("dir"))
+                {
+                    list(cmd.Replace("dir ", ""));
+                }
+
+                if (cmd.StartsWith("mkdir"))
+                {
+                    // Creates directory
+                    Directory.CreateDirectory(cmd.Replace("mkdir ", ""));
+                }
+
+                // copy/cp are aliased functions
+                // Copy file to other location
+                if (cmd.StartsWith("copy"))
+                {
+                    Console.Write("  What's your destination? ");
+                    string dest = Console.ReadLine();
+                    try
+                    {
+                        File.Copy(cmd.Replace("copy ", ""), dest);
+                    }
+                    catch
+                    {
+                        Console.WriteLine("  This file doesn't exist.");
+                    }
+                }
+
+                if (cmd.StartsWith("cp"))
+                {
+                    Console.Write("  What's your destination? ");
+                    string dest = Console.ReadLine();
+                    try
+                    {
+                        File.Copy(cmd.Replace("cp ", ""), dest);
+                    }
+                    catch
+                    {
+                        Console.WriteLine("  This file doesn't exist.");
+                    }
+                }
+
+                if (cmd.StartsWith("del"))
+                {
+                    // Delete directory
+                    try
+                    {
+                        Directory.Delete(cmd.Replace("del ", ""));
+                    }
+                    catch
+                    {
+                        Console.WriteLine("  This directory doesn't exist.");
+                    }
+                }
+
+                if (cmd.StartsWith("get"))
+                {
+                    // Package downloader
+                    Console.Write("  What is your destination file? ");
+                    string file3 = Console.ReadLine();
+                    ServicePointManager.Expect100Continue = true;
+                    ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                    using (var client = new WebClient())
+                    {
+                        client.DownloadFile(cmd.Replace("get ", ""), file3);
+                    }
+                }
+
+                // Sets parent working directory
+                if (cmd.StartsWith("cd"))
+                {
+                    try
+                    {
+                        Directory.SetCurrentDirectory(cmd.Replace("cd ", ""));
+                    }
+                    catch
+                    {
+                        Console.WriteLine("  This directory doesn't exist.");
+                    }
+                }
+
+                if (cmd == "help")
+                {
+                    // Help command
+                    help();
+                }
+
+                if (cmd == "exit")
+                {
+                    System.Environment.Exit(1);
+                }
+
+                if (cmd == "?")
+                {
+                    // Help command
+                    help();
+                }
+
+                else
+                {
+                    // executes or prints content of given file
+                    string args = "";
+                    string exec = "";
+
+                    string[] textSplit = cmd.Split(':');
+                    exec = textSplit[0];
+
+                    if (cmd.Contains(':'))
+                    {
+                        args = textSplit[1];
+                    }
+
+                    System.Diagnostics.Process p = new System.Diagnostics.Process();
+                    p.StartInfo.FileName = exec;
+                    p.StartInfo.Arguments = args;
+                    p.StartInfo.UseShellExecute = false;
+
+
+                    if (File.Exists(exec))
+                    {
+                        bool isExe = CheckIfFileIsExecutable(exec);
+                        if (isExe)
                         {
-                            Console.WriteLine("  ");
-                            Separator();
-                            string data = File.ReadAllText(cmd);
-                            Console.WriteLine(data);
-                            Separator();
-                            Console.WriteLine("  ");
-                            Horizon_Cmd();
-                        }
-                        else if (File.Exists(exec))
-                        {
-                            Console.WriteLine("  ");
-                            Separator();
-                            string data = File.ReadAllText(exec);
-                            Console.WriteLine(data);
-                            Separator();
-                            Console.WriteLine("  ");
+                            // Start executable
+                            Console.WriteLine();
+                            p.Start();
                             Horizon_Cmd();
                         }
                         else
                         {
-                            Horizon_Cmd();
+                            // Print contents
+                            if (File.Exists(cmd))
+                            {
+                                Console.WriteLine("  ");
+                                Separator();
+                                string data = File.ReadAllText(cmd);
+                                Console.WriteLine(data);
+                                Separator();
+                                Console.WriteLine("  ");
+                                Horizon_Cmd();
+                            }
+                            else if (File.Exists(exec))
+                            {
+                                Console.WriteLine("  ");
+                                Separator();
+                                string data = File.ReadAllText(exec);
+                                Console.WriteLine(data);
+                                Separator();
+                                Console.WriteLine("  ");
+                                Horizon_Cmd();
+                            }
+                            else
+                            {
+                                Horizon_Cmd();
+                            }
                         }
                     }
+                    else
+                    {
+                        Horizon_Cmd();
+                    }
                 }
-                else
-                {
-                    Horizon_Cmd();
-                }
             }
-        }
-
-        static bool CheckIfFileIsExecutable(string file)
-        {
-            try
+            catch(Exception ex)
             {
-                var firstTwoBytes = new byte[2];
-                using (var fileStream = File.Open(file, FileMode.Open))
-                {
-                    fileStream.Read(firstTwoBytes, 0, 2);
-                }
-                return Encoding.UTF8.GetString(firstTwoBytes) == "MZ";
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine("  ");
-                Console.WriteLine(ex);
-                Console.WriteLine("  ");
-            }
-            return false;
-        }
-
-        static void help()
-        {
-            Console.WriteLine("  ");
-            Console.WriteLine("  List of [horizon] commands");
-            Separator();
-            Console.WriteLine("  edit <filename>         | edit a file");
-            Console.WriteLine("  delete <filename>       | delete a file  ");
-            Console.WriteLine("  print <text>            | print a given text  ");
-            Console.WriteLine("  [filename][:args]       | execute or print the content of this file");
-            Console.WriteLine("  horizon flush           | reset settings (reg64.settings)");
-            Console.WriteLine("  list/ls/dir <directory> | list all files in directory");
-            Console.WriteLine("  cd <directory>          | change current directory");
-            Console.WriteLine("  mkdir <directory>       | create a new directory");
-            Console.WriteLine("  del <directory>         | delete a directory");
-            Console.WriteLine("  copy/cp <filename>      | copy a file");
-            Console.WriteLine("  get <url>               | download from Internet");
-            Console.WriteLine("  ");
-            Horizon_Cmd();
-        }
-
-        static void list(string directory)
-        {
-            // List files in directory
-            if (directory == "")
-            {
-                directory = System.IO.Directory.GetCurrentDirectory();
-                Console.WriteLine("  ");
-                Console.WriteLine("  List of all files in current directory");
-            }
-            else if (directory == "list")
-            {
-                directory = System.IO.Directory.GetCurrentDirectory();
-                Console.WriteLine("  ");
-                Console.WriteLine("  List of all files in current directory");
-            }
-            else if (directory == "ls")
-            {
-                directory = System.IO.Directory.GetCurrentDirectory();
-                Console.WriteLine("  ");
-                Console.WriteLine("  List of all files in current directory");
-            }
-            else if (directory == "dir")
-            {
-                directory = System.IO.Directory.GetCurrentDirectory();
-                Console.WriteLine("  ");
-                Console.WriteLine("  List of all files in current directory");
-            }
-            else
-            {
-                Console.WriteLine("  ");
-                Console.WriteLine("  List of all files in " + directory);
+                crash(ex);
             }
 
-            Separator();
-            try
+            static void crash(Exception data)
             {
-                string[] allfiles = Directory.GetFiles(directory, "*.*");
-                foreach (var file in allfiles)
-                {
-                    FileInfo info = new FileInfo(file);
-                    Console.WriteLine(info.Name);
-                }
-                string[] allfolders = Directory.GetDirectories(directory, "*.*");
-                foreach (var folder in allfolders)
-                {
-                    FileInfo info2 = new FileInfo(folder);
-                    Console.WriteLine("\\" + info2.Name);
-                }
+                Console.BackgroundColor = ConsoleColor.DarkBlue;
+                Console.Clear();
+                Console.WriteLine("  ");
+                Console.BackgroundColor = ConsoleColor.Red;
+                Console.WriteLine("  Something really went wrong.");
+                Console.Write("  System halted.");
+                Console.BackgroundColor = ConsoleColor.DarkBlue;
+                Console.WriteLine("  ");
+                Console.WriteLine("  ");
+                Console.WriteLine("---------- technical info ----------");
+                Console.WriteLine(data);
+                Console.WriteLine("---------- technical info ----------");
+                Console.ReadLine();
             }
-            catch
+
+            static bool CheckIfFileIsExecutable(string file)
             {
-                Console.WriteLine("  This directory doesn't exist.");
+                try
+                {
+                    var firstTwoBytes = new byte[2];
+                    using (var fileStream = File.Open(file, FileMode.Open))
+                    {
+                        fileStream.Read(firstTwoBytes, 0, 2);
+                    }
+                    return Encoding.UTF8.GetString(firstTwoBytes) == "MZ";
+                }
+                catch (Exception ex)
+                {
+                    Console.WriteLine("  ");
+                    Console.WriteLine(ex);
+                    Console.WriteLine("  ");
+                }
+                return false;
             }
-            Console.WriteLine("  ");
+
+            static void help()
+            {
+                Console.WriteLine("  ");
+                Console.WriteLine("  List of [horizon] commands");
+                Separator();
+                Console.WriteLine("  edit <filename>         | edit a file");
+                Console.WriteLine("  delete <filename>       | delete a file  ");
+                Console.WriteLine("  print <text>            | print a given text  ");
+                Console.WriteLine("  [filename][:args]       | execute or print the content of this file");
+                Console.WriteLine("  horizon flush           | reset settings (reg64.settings)");
+                Console.WriteLine("  list/ls/dir <directory> | list all files in directory");
+                Console.WriteLine("  cd <directory>          | change current directory");
+                Console.WriteLine("  mkdir <directory>       | create a new directory");
+                Console.WriteLine("  del <directory>         | delete a directory");
+                Console.WriteLine("  copy/cp <filename>      | copy a file");
+                Console.WriteLine("  get <url>               | download from Internet");
+                Console.WriteLine("  ");
+                Horizon_Cmd();
+            }
+
+            static void list(string directory)
+            { try {
+                    // List files in directory
+                    if (directory == "")
+                    {
+                        directory = System.IO.Directory.GetCurrentDirectory();
+                        Console.WriteLine("  ");
+                        Console.WriteLine("  List of all files in current directory");
+                    }
+                    else if (directory == "list")
+                    {
+                        directory = System.IO.Directory.GetCurrentDirectory();
+                        Console.WriteLine("  ");
+                        Console.WriteLine("  List of all files in current directory");
+                    }
+                    else if (directory == "ls")
+                    {
+                        directory = System.IO.Directory.GetCurrentDirectory();
+                        Console.WriteLine("  ");
+                        Console.WriteLine("  List of all files in current directory");
+                    }
+                    else if (directory == "dir")
+                    {
+                        directory = System.IO.Directory.GetCurrentDirectory();
+                        Console.WriteLine("  ");
+                        Console.WriteLine("  List of all files in current directory");
+                    }
+                    else
+                    {
+                        Console.WriteLine("  ");
+                        Console.WriteLine("  List of all files in " + directory);
+                    }
+
+                    Separator();
+                    try
+                    {
+                        string[] allfiles = Directory.GetFiles(directory, "*.*");
+                        foreach (var file in allfiles)
+                        {
+                            Console.Write("  ");
+                            FileInfo info = new FileInfo(file);
+                            Console.WriteLine(info.Name);
+                        }
+                        string[] allfolders = Directory.GetDirectories(directory, "*.*");
+                        foreach (var folder in allfolders)
+                        {
+                            Console.Write("  ");
+                            FileInfo info2 = new FileInfo(folder);
+                            Console.WriteLine("\\" + info2.Name);
+                        }
+                    }
+                    catch
+                    {
+                        Console.WriteLine("  This directory doesn't exist.");
+                    }
+                    Console.WriteLine("  ");
+                }
+                catch (Exception ex)
+                {
+                    crash(ex);
+                }
+                }
         }
     }
 }
