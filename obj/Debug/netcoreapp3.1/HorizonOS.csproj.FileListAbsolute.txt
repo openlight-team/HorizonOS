@@ -11,3 +11,5 @@ C:\Users\vince\source\repos\HorizonOS\HorizonOS\obj\Debug\netcoreapp3.1\HorizonO
 C:\Users\vince\source\repos\HorizonOS\HorizonOS\obj\Debug\netcoreapp3.1\HorizonOS.dll
 C:\Users\vince\source\repos\HorizonOS\HorizonOS\obj\Debug\netcoreapp3.1\HorizonOS.pdb
 C:\Users\vince\source\repos\HorizonOS\HorizonOS\obj\Debug\netcoreapp3.1\HorizonOS.genruntimeconfig.cache
+D:\Github\HorizonOS\obj\Debug\netcoreapp3.1\HorizonOS.dll
+D:\Github\HorizonOS\obj\Debug\netcoreapp3.1\HorizonOS.pdb
