@@ -37,6 +37,9 @@ namespace entendreOS
             }
 
             Console.ForegroundColor = ConsoleColor.White;
+
+            LogoASCII();
+
             Thread.Sleep(1000); // Thread is put to sleep for 1 second in order to keep reasonable loading times and reassure the user
             Horizon_Logon(); // The OS now starts. Logon function is initiated.
         }
@@ -44,61 +47,83 @@ namespace entendreOS
         static void Separator()
         {
             // This is just for visualization
-            Console.WriteLine("--------------------");
+            Console.WriteLine("  ----------------------------------------");
         }
 
         static void Horizon_Logon()
         {
             // System runs through registry checks
-            Console.WriteLine("Looking for your accounts...");
+            Console.WriteLine("  Reading registry...");
 
-            if(! Properties.reg64.Default.isOOBEdone)
-            {
-                // If registry flag isOOBEdone is false, launch Out Of Box Experience.
-                Horizon_OOBE();
-            }
-            else if (File.Exists("globalreg/autologin.horizonconf"))
-            {
-                // If autologin enabled, start main process.
-                Horizon();
+            
+            if (File.Exists("globalreg/oobe.horizonconf"))
+            {      
+                if (File.Exists("globalreg/autologin.horizonconf"))
+                {
+                    // If autologin enabled, start main process.
+                    Horizon();
+                }
+                else
+                {
+                    // Login process
+                    Horizon_Login();
+                }
             }
             else
             {
-                // Login process
-                Horizon_Login();
+                // If registry flag OOBE doesn't exist, launch Out Of Box Experience.
+                Horizon_OOBE();
             }
+        }
+
+        static void LogoASCII()
+        {
+            Console.WriteLine(" ");
+            Console.WriteLine("  ██╗░░██╗░█████╗░██████╗░██╗███████╗░█████╗░███╗░░██╗░█████╗░░██████╗");
+            Console.WriteLine("  ██║░░██║██╔══██╗██╔══██╗██║╚════██║██╔══██╗████╗░██║██╔══██╗██╔════╝");
+            Console.WriteLine("  ███████║██║░░██║██████╔╝██║░░███╔═╝██║░░██║██╔██╗██║██║░░██║╚█████╗");
+            Console.WriteLine("  ██╔══██║██║░░██║██╔══██╗██║██╔══╝░░██║░░██║██║╚████║██║░░██║░╚═══██╗");
+            Console.WriteLine("  ██║░░██║╚█████╔╝██║░░██║██║███████╗╚█████╔╝██║░╚███║╚█████╔╝██████╔╝");
+            Console.WriteLine("  ╚═╝░░╚═╝░╚════╝░╚═╝░░╚═╝╚═╝╚══════╝░╚════╝░╚═╝░░╚══╝░╚════╝░╚═════╝");
+            Console.WriteLine(" ");
+            Separator();
+            Console.WriteLine(" ");
         }
 
         static void Horizon_OOBE()
         {
             Console.BackgroundColor = ConsoleColor.DarkBlue;
             Console.Clear();
-            Console.WriteLine("Welcome to Horizon!");
-            Console.WriteLine("To get started, you need to create a profile.");
+
+            LogoASCII();
+
+            Console.WriteLine("  Welcome to Horizon!");
+            Console.WriteLine("  To get started, you need to create a profile.");
+            Console.WriteLine(" ");
 
             Separator();
-            Console.Write("Choose a fancy username: ");
+            Console.WriteLine(" ");
+            Console.Write("  Choose a fancy username > ");
             string username = Console.ReadLine();
 
-            Console.Write("Choose a secure password: ");
+            Console.WriteLine(" ");
+            Console.Write("  Choose a secure password > ");
             string password = ReadPassword();
 
             Console.Clear();
-            Console.Write("Hi, "+username);
+            LogoASCII();
+            Console.Write("  Hi, " + username);
             // globalreg created
             Directory.CreateDirectory("globalreg");
-            // username property set to username
-            Properties.reg64.Default.username = username;
             // Creates user config file
             File.Delete(@"globalreg/username.horizonconf");
+            File.Delete(@"globalreg/password.horizonconf");
             // Appends username to said config file
             File.AppendAllText(@"globalreg/username.horizonconf", username);
-            // password property set to password
-            Properties.reg64.Default.password = password;
+            // Saving hashed password
+            File.AppendAllText(@"globalreg/password.horizonconf", HashString(password, File.ReadAllText(@"globalreg/username.horizonconf")));
             // OOBE marked as done
-            Properties.reg64.Default.isOOBEdone = true;
-            // Saves all properties to registry
-            Properties.reg64.Default.Save();
+            File.AppendAllText(@"globalreg/oobe.horizonconf", "1");
             Thread.Sleep(1000);
             Horizon_Logon();
         }
@@ -138,54 +163,111 @@ namespace entendreOS
             return password;
         }
 
+        // Function to get version (from: https://developerpublish.com/c-tips-and-tricks-20-get-assembly-file-version/)
+        public static string GetAssemblyFileVersion()
+        {
+            System.Reflection.Assembly assembly = System.Reflection.Assembly.GetExecutingAssembly();
+            FileVersionInfo fileVersion = FileVersionInfo.GetVersionInfo(assembly.Location);
+            return fileVersion.FileVersion;
+        }
+
         static void Horizon_Login()
         {
-            // Background colour set to black because OOBE sets colour to blue
-            Console.BackgroundColor = ConsoleColor.Black;
+            Console.BackgroundColor = ConsoleColor.DarkMagenta;
             Console.Clear();
 
-            Console.WriteLine("Horizon 20.07 beta clui1");
+            LogoASCII();
+
+            Console.WriteLine("  Horizon " + GetAssemblyFileVersion() + " beta");
+            Console.WriteLine(" ");
+
+            Separator();
+
+            Console.WriteLine(" ");
+            Console.WriteLine("  Welcome back to Horizon!");
+            Console.WriteLine("  Please sign in to access all software and features.");
+            Console.WriteLine(" ");
+
+            Separator();
+
+            string hashedPass = File.ReadAllText(@"globalreg/password.horizonconf");
+
             Console.WriteLine("  ");
 
-            Console.Write("horizon login: ");
+            Console.Write("  username > ");
             string loginu = Console.ReadLine();
+
+            Console.WriteLine("  ");
 
             Thread.Sleep(1000);
 
-            if (loginu != Properties.reg64.Default.username)
+            // Checking username
+            if (loginu != File.ReadAllText(@"globalreg/username.horizonconf"))
             {
-                Console.WriteLine("Unknown user: " + loginu);
+                Console.WriteLine("  Unknown user: " + loginu);
                 Thread.Sleep(1000);
                 Horizon_Login();
             }
 
-            Console.Write("password for "+loginu+": ");
+            Console.Write("  password > ");
             string loginp = ReadPassword();
 
             Console.WriteLine("  ");
             Thread.Sleep(1000);
 
-            if (loginp != Properties.reg64.Default.password)
+            // Comparing passwords entered and saved hash
+            if (HashString(loginp, File.ReadAllText(@"globalreg/username.horizonconf")) != hashedPass)
             {
-                Console.WriteLine("Sorry... Try again...");
+                Console.WriteLine("  Sorry... Try again...");
                 Thread.Sleep(1000);
                 Horizon_Login();
             }
-            else if (loginp == Properties.reg64.Default.password)
+            else if (HashString(loginp, File.ReadAllText(@"globalreg/username.horizonconf")) == hashedPass)
             {
                 Thread.Sleep(1000);
                 Horizon();
             }
         }
+
+        // Hashing algorithm (source: https://www.sean-lloyd.com/post/hash-a-string/)
+        static string HashString(string text, string salt = "")
+        {
+            if (String.IsNullOrEmpty(text))
+            {
+                return String.Empty;
+            }
+
+            // Uses SHA256 to create the hash
+            using (var sha = new System.Security.Cryptography.SHA256Managed())
+            {
+                // Convert the string to a byte array first, to be processed
+                byte[] textBytes = System.Text.Encoding.UTF8.GetBytes(text + salt);
+                byte[] hashBytes = sha.ComputeHash(textBytes);
+
+                // Convert back to a string, removing the '-' that BitConverter adds
+                string hash = BitConverter
+                    .ToString(hashBytes)
+                    .Replace("-", String.Empty);
+
+                return hash;
+            }
+        }
+
         static void Horizon()
         {
+            Console.BackgroundColor = ConsoleColor.Black;
             Console.Clear();
-            Console.WriteLine("Welcome to Horizon 20.07 beta (Windows/.NET Framework 4.7)");
-            Console.WriteLine("   * Help and support  : @Vincent.#0705 on Discord");
-            Console.WriteLine("                       : @ecnivtwelve on Github");
-            Console.WriteLine("                       : @Rexxt on Github");
-            Console.WriteLine("   * My website        : https://www.ectw.fr/");
-            Console.WriteLine("   * Openlight website : https://openlight.me/");
+            LogoASCII();
+
+            Console.WriteLine("  Welcome to Horizon 20.07 beta (Windows/.NET Framework 4.7)");
+            Console.WriteLine("     * Help and support  : @Vincent.#0705 on Discord");
+            Console.WriteLine("                         : @ecnivtwelve on Github");
+            Console.WriteLine("                         : @Rexxt on Github");
+            Console.WriteLine("     * My website        : https://www.ectw.fr/");
+            Console.WriteLine("     * Openlight website : https://openlight.me/");
+            Console.WriteLine("  ");
+
+            Separator();
             Console.WriteLine("  ");
 
             Horizon_Cmd();
@@ -197,27 +279,28 @@ namespace entendreOS
             string fullPath = Path.GetFullPath(path).TrimEnd(Path.DirectorySeparatorChar);
             string projectName = Path.GetFileName(fullPath);
 
-            Console.Write("horizon:"+Properties.reg64.Default.username+"/"+projectName+"() ");
+            Console.Write("  (horizon)" + File.ReadAllText(@"globalreg/username.horizonconf") + "/" + projectName + " > ");
             string cmd = Console.ReadLine();
-            
+
             // HzCmd builtins
 
-            if(cmd == "horizon flush")
+            if (cmd == "horizon flush")
             {
                 // Resets OS
 
-                Console.Write("Are you sure you want to reset reg64 (yes/no) ? ");
+                Console.Write("  Are you sure you want to reset the registry (yes/no) ? ");
                 string answer = Console.ReadLine();
 
-                if(answer == "yes")
+                if (answer == "yes")
                 {
-                    Properties.reg64.Default.Reset();
+                    File.Delete(@"globalreg/oobe.horizonconf");
                     Console.Clear();
                     Console.WriteLine("  ");
-                    Console.WriteLine("reg64 has been reset to its default values.");
+                    Console.WriteLine("  Registry has been reset to its default values.");
                     Horizon_Logon();
                 }
-                else {
+                else
+                {
                     Horizon_Cmd();
                 }
             }
@@ -231,8 +314,8 @@ namespace entendreOS
 
                 Console.WriteLine("  ");
 
-                Console.WriteLine("Appending to " + filename2);
-                Console.WriteLine("Write [#save] to save the document");
+                Console.WriteLine("  Appending to " + filename2);
+                Console.WriteLine("  Write [#save] to save the document");
                 Separator();
 
                 string lastline;
@@ -242,6 +325,7 @@ namespace entendreOS
                 {
                     while (save == false)
                     {
+                        Console.Write("  ");
                         lastline = Console.ReadLine();
                         if (lastline == "#save")
                         {
@@ -258,7 +342,7 @@ namespace entendreOS
                 catch
                 {
                     Console.WriteLine(" ");
-                    Console.WriteLine("Cannot save, this folder doesn't exist");
+                    Console.WriteLine("  Cannot save, this folder doesn't exist");
                     Separator();
                 }
             }
@@ -275,7 +359,7 @@ namespace entendreOS
                 }
                 else
                 {
-                    Console.WriteLine("The file doesn't exist.");
+                    Console.WriteLine("  The file doesn't exist.");
                     Console.WriteLine("  ");
                     Horizon_Cmd();
                 }
@@ -284,7 +368,7 @@ namespace entendreOS
             if (cmd.StartsWith("print"))
             {
                 // Prints text to console
-                Console.WriteLine("  ");
+                Console.Write("  ");
                 Console.WriteLine(cmd.Replace("print ", ""));
                 Console.WriteLine("  ");
             }
@@ -316,7 +400,7 @@ namespace entendreOS
             // Copy file to other location
             if (cmd.StartsWith("copy"))
             {
-                Console.Write("What's your destination? ");
+                Console.Write("  What's your destination? ");
                 string dest = Console.ReadLine();
                 try
                 {
@@ -324,13 +408,13 @@ namespace entendreOS
                 }
                 catch
                 {
-                    Console.WriteLine("This file doesn't exist.");
+                    Console.WriteLine("  This file doesn't exist.");
                 }
             }
 
             if (cmd.StartsWith("cp"))
             {
-                Console.Write("What's your destination? ");
+                Console.Write("  What's your destination? ");
                 string dest = Console.ReadLine();
                 try
                 {
@@ -338,7 +422,7 @@ namespace entendreOS
                 }
                 catch
                 {
-                    Console.WriteLine("This file doesn't exist.");
+                    Console.WriteLine("  This file doesn't exist.");
                 }
             }
 
@@ -351,14 +435,14 @@ namespace entendreOS
                 }
                 catch
                 {
-                    Console.WriteLine("This directory doesn't exist.");
+                    Console.WriteLine("  This directory doesn't exist.");
                 }
             }
 
             if (cmd.StartsWith("get"))
             {
                 // Package downloader
-                Console.Write("What is your destination file? ");
+                Console.Write("  What is your destination file? ");
                 string file3 = Console.ReadLine();
                 ServicePointManager.Expect100Continue = true;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
@@ -377,7 +461,7 @@ namespace entendreOS
                 }
                 catch
                 {
-                    Console.WriteLine("This directory doesn't exist.");
+                    Console.WriteLine("  This directory doesn't exist.");
                 }
             }
 
@@ -407,7 +491,7 @@ namespace entendreOS
                 string[] textSplit = cmd.Split(':');
                 exec = textSplit[0];
 
-                if(cmd.Contains(':'))
+                if (cmd.Contains(':'))
                 {
                     args = textSplit[1];
                 }
@@ -433,16 +517,20 @@ namespace entendreOS
                         if (File.Exists(cmd))
                         {
                             Console.WriteLine("  ");
+                            Separator();
                             string data = File.ReadAllText(cmd);
                             Console.WriteLine(data);
+                            Separator();
                             Console.WriteLine("  ");
                             Horizon_Cmd();
                         }
                         else if (File.Exists(exec))
                         {
                             Console.WriteLine("  ");
+                            Separator();
                             string data = File.ReadAllText(exec);
                             Console.WriteLine(data);
+                            Separator();
                             Console.WriteLine("  ");
                             Horizon_Cmd();
                         }
@@ -482,19 +570,19 @@ namespace entendreOS
         static void help()
         {
             Console.WriteLine("  ");
-            Console.WriteLine("List of [horizon] commands");
+            Console.WriteLine("  List of [horizon] commands");
             Separator();
-            Console.WriteLine("edit <filename>         | edit a file");
-            Console.WriteLine("delete <filename>       | delete a file  ");
-            Console.WriteLine("print <text>            | print a given text  ");
-            Console.WriteLine("[filename][:args]       | execute or print the content of this file");
-            Console.WriteLine("horizon flush           | reset settings (reg64.settings)");
-            Console.WriteLine("list/ls/dir <directory> | list all files in directory");
-            Console.WriteLine("cd <directory>          | change current directory");
-            Console.WriteLine("mkdir <directory>       | create a new directory");
-            Console.WriteLine("del <directory>         | delete a directory");
-            Console.WriteLine("copy/cp <filename>      | copy a file");
-            Console.WriteLine("get <url>               | download from Internet");
+            Console.WriteLine("  edit <filename>         | edit a file");
+            Console.WriteLine("  delete <filename>       | delete a file  ");
+            Console.WriteLine("  print <text>            | print a given text  ");
+            Console.WriteLine("  [filename][:args]       | execute or print the content of this file");
+            Console.WriteLine("  horizon flush           | reset settings (reg64.settings)");
+            Console.WriteLine("  list/ls/dir <directory> | list all files in directory");
+            Console.WriteLine("  cd <directory>          | change current directory");
+            Console.WriteLine("  mkdir <directory>       | create a new directory");
+            Console.WriteLine("  del <directory>         | delete a directory");
+            Console.WriteLine("  copy/cp <filename>      | copy a file");
+            Console.WriteLine("  get <url>               | download from Internet");
             Console.WriteLine("  ");
             Horizon_Cmd();
         }
@@ -502,38 +590,39 @@ namespace entendreOS
         static void list(string directory)
         {
             // List files in directory
-            if(directory == "")
+            if (directory == "")
             {
                 directory = System.IO.Directory.GetCurrentDirectory();
                 Console.WriteLine("  ");
-                Console.WriteLine("List of all files in current directory");
+                Console.WriteLine("  List of all files in current directory");
             }
             else if (directory == "list")
             {
                 directory = System.IO.Directory.GetCurrentDirectory();
                 Console.WriteLine("  ");
-                Console.WriteLine("List of all files in current directory");
+                Console.WriteLine("  List of all files in current directory");
             }
             else if (directory == "ls")
             {
                 directory = System.IO.Directory.GetCurrentDirectory();
                 Console.WriteLine("  ");
-                Console.WriteLine("List of all files in current directory");
+                Console.WriteLine("  List of all files in current directory");
             }
             else if (directory == "dir")
             {
                 directory = System.IO.Directory.GetCurrentDirectory();
                 Console.WriteLine("  ");
-                Console.WriteLine("List of all files in current directory");
+                Console.WriteLine("  List of all files in current directory");
             }
             else
             {
                 Console.WriteLine("  ");
-                Console.WriteLine("List of all files in " + directory);
+                Console.WriteLine("  List of all files in " + directory);
             }
-            
+
             Separator();
-            try {
+            try
+            {
                 string[] allfiles = Directory.GetFiles(directory, "*.*");
                 foreach (var file in allfiles)
                 {
@@ -549,7 +638,7 @@ namespace entendreOS
             }
             catch
             {
-                Console.WriteLine("This directory doesn't exist.");
+                Console.WriteLine("  This directory doesn't exist.");
             }
             Console.WriteLine("  ");
         }

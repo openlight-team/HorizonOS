@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+    <AssemblyVersion>1.2.0.4</AssemblyVersion>
+    <FileVersion>1.2.0.4</FileVersion>
+    <PackageProjectUrl>https://github.com/openlight-team/HorizonOS</PackageProjectUrl>
+    <PackageIcon>horizon.png</PackageIcon>
+    <PackageIconUrl />
+    <Copyright>(C) 2020 Openlight Inc.</Copyright>
+    <Description>An open-source, free to use cmd alternative for Windows.</Description>
+    <Authors>ecnivtwelve &amp; Mizu</Authors>
+    <Company>Openlight</Company>
+    <Version>1.2.0.4</Version>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Include="..\..\..\..\Downloads\horizon.png">
+      <Pack>True</Pack>
+      <PackagePath></PackagePath>
+    </None>
+  </ItemGroup>
+
+</Project>

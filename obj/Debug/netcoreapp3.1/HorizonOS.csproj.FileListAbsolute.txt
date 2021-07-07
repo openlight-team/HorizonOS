@@ -1,0 +1,13 @@
+C:\Users\vince\source\repos\HorizonOS\HorizonOS\bin\Debug\netcoreapp3.1\HorizonOS.exe
+C:\Users\vince\source\repos\HorizonOS\HorizonOS\bin\Debug\netcoreapp3.1\HorizonOS.deps.json
+C:\Users\vince\source\repos\HorizonOS\HorizonOS\bin\Debug\netcoreapp3.1\HorizonOS.runtimeconfig.json
+C:\Users\vince\source\repos\HorizonOS\HorizonOS\bin\Debug\netcoreapp3.1\HorizonOS.runtimeconfig.dev.json
+C:\Users\vince\source\repos\HorizonOS\HorizonOS\bin\Debug\netcoreapp3.1\HorizonOS.dll
+C:\Users\vince\source\repos\HorizonOS\HorizonOS\bin\Debug\netcoreapp3.1\HorizonOS.pdb
+C:\Users\vince\source\repos\HorizonOS\HorizonOS\obj\Debug\netcoreapp3.1\HorizonOS.csproj.AssemblyReference.cache
+C:\Users\vince\source\repos\HorizonOS\HorizonOS\obj\Debug\netcoreapp3.1\HorizonOS.AssemblyInfoInputs.cache
+C:\Users\vince\source\repos\HorizonOS\HorizonOS\obj\Debug\netcoreapp3.1\HorizonOS.AssemblyInfo.cs
+C:\Users\vince\source\repos\HorizonOS\HorizonOS\obj\Debug\netcoreapp3.1\HorizonOS.csproj.CoreCompileInputs.cache
+C:\Users\vince\source\repos\HorizonOS\HorizonOS\obj\Debug\netcoreapp3.1\HorizonOS.dll
+C:\Users\vince\source\repos\HorizonOS\HorizonOS\obj\Debug\netcoreapp3.1\HorizonOS.pdb
+C:\Users\vince\source\repos\HorizonOS\HorizonOS\obj\Debug\netcoreapp3.1\HorizonOS.genruntimeconfig.cache
