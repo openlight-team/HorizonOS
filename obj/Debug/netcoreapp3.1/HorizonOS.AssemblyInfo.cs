@@ -15,11 +15,11 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyCopyrightAttribute("(C) 2020 Openlight Inc.")]
 [assembly: System.Reflection.AssemblyDescriptionAttribute("An open-source, free to use cmd alternative for Windows.")]
-[assembly: System.Reflection.AssemblyFileVersionAttribute("1.2.0.6")]
+[assembly: System.Reflection.AssemblyFileVersionAttribute("1.2.0.8")]
 [assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.2.0.4")]
 [assembly: System.Reflection.AssemblyProductAttribute("HorizonOS")]
 [assembly: System.Reflection.AssemblyTitleAttribute("HorizonOS")]
-[assembly: System.Reflection.AssemblyVersionAttribute("1.2.0.7")]
+[assembly: System.Reflection.AssemblyVersionAttribute("1.2.0.8")]
 
 // Généré par la classe MSBuild WriteCodeFragment.
 
