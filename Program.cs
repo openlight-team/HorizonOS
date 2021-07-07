@@ -503,6 +503,7 @@ namespace entendreOS
                     if (isExe)
                     {
                         // Start executable
+                        Console.WriteLine();
                         p.Start();
                         Horizon_Cmd();
                     }
