@@ -259,7 +259,7 @@ namespace entendreOS
             Console.Clear();
             LogoASCII();
 
-            Console.WriteLine("  Welcome to Horizon 20.07 beta (Windows/.NET Framework 4.7)");
+            Console.WriteLine("  Welcome to Horizon " + GetAssemblyFileVersion() + " beta (Windows/.NET Framework 4.7)");
             Console.WriteLine("     * Help and support  : @Vincent.#0705 on Discord");
             Console.WriteLine("                         : @ecnivtwelve on Github");
             Console.WriteLine("                         : @Rexxt on Github");
