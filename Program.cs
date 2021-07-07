@@ -140,7 +140,7 @@ namespace entendreOS
 
         static void Horizon_Login()
         {
-            // Background colour set to black because OOBE sets colour to blie
+            // Background colour set to black because OOBE sets colour to blue
             Console.BackgroundColor = ConsoleColor.Black;
             Console.Clear();
 
