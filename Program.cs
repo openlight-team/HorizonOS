@@ -45,6 +45,22 @@ namespace entendreOS
             Console.WriteLine("  ----------------------------------------");
         }
 
+        static void ProgressBar(string mode, float progress)
+        {
+            // Progress bar render function
+            var w = Console.WindowWidth;
+            if (mode == "oobe")
+            {
+                for(var p = 0; p <= Math.Floor(progress*w); p++)
+                {
+                    Console.Write("=");
+                }
+            } else
+            {
+                Console.WriteLine("Internal Error: Progress bar render mode " + mode + " doesn't exist.");
+            }
+        }
+
         static void Horizon_Logon()
         {
             // System runs through registry checks
@@ -93,6 +109,11 @@ namespace entendreOS
             LogoASCII();
 
             Console.WriteLine("  Welcome to Horizon!");
+            Console.WriteLine("  In this tool, we will finalize configuring HorizonOS.");
+            Separator();
+            Console.WriteLine("  Progress: " + Math.Floor(1/2*100).ToString() + "%");
+            ProgressBar("oobe", 1/2)
+            Separator();
             Console.WriteLine("  To get started, you need to create a profile.");
             Console.WriteLine(" ");
 
